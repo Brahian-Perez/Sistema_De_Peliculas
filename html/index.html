@@ -4,8 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recomienda las pelis</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
+    <!-- Pantalla de Login -->
+    <div id="login-screen">
+        <header>
+            <h1>Cinema Matrix</h1>
+            <p>Accede a tu cuenta</p>
+        </header>
+        <div class="login-btns">
+            <button class="btn-primary" onclick="login('Admin')">Ingresar como Admin</button>
+            <button class="btn-outline" onclick="login('User')">Ingresar como Usuario</button>
+        </div>
+    </div>
+
+    <!-- Aplicación Principal -->
+    <div id="main-app" class="hidden">
+        
+        <!-- Sidebar: Gestión -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 id="panel-title">Gestión</h2>
+            </div>
+            
+            <div id="admin-form" class="panel-content">
+                <div class="form-group">
+                    <label>Título de la Obra</label>
+                    <input type="text" id="p-titulo" placeholder="Oppenheimer...">
+                </div>
+                <div class="form-group">
+                    <label>Director</label>
+                    <input type="text" id="p-director">
+                </div>
+                <div class="grid-inputs">
+                    <div>
+                        <label>Año</label>
+                        <input type="number" id="p-year" value="2024">
+                    </div>
+                    <div>
+                        <label>Categoría</label>
+                        <select id="p-categoria">
+                            <option>Acción</option>
+                            <option>Drama</option>
+                            <option>Ciencia Ficción</option>
+                            <option>Terror</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Sinopsis</label>
+                    <textarea id="p-sinopsis" rows="4"></textarea>
+                </div>
+                <button class="btn-primary" onclick="crearPelicula()">Añadir al Catálogo</button>
+            </div>
+
+            <div id="user-panel" class="panel-content hidden">
+                <div class="welcome-card">
+                    <span>🍿</span>
+                    <h3>¡Hola de nuevo!</h3>
+                    <p>Explora el contenido y comparte tu opinión con la comunidad.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal: Feed -->
+        <main class="feed">
+            <nav class="feed-nav">
+                <h2>Cartelera</h2>
+                <div class="nav-actions">
+                    <span id="badge-rol" class="badge">Admin</span>
+                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div id="lista-peliculas" class="movie-grid">
+                <!-- Se llena con JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Enlace al JS -->
+    <script src="script.js"></script>
 </body>
 </html>
