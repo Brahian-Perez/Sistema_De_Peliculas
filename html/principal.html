@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema Matrix - Catálogo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="app-page">
+    <!-- Navbar Principal -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <h1>🎬 Cinema Matrix</h1>
+            </div>
+            <div class="navbar-user">
+                <span id="username" class="user-name">Usuario</span>
+                <span id="user-type" class="badge">Cliente</span>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- Sidebar: Panel de Control -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 id="panel-title">Panel de Control</h2>
+            </div>
+            
+            <!-- Formulario Admin: Crear Película -->
+            <div id="admin-panel" class="panel-content hidden">
+                <div class="panel-section">
+                    <h3>👨‍💼 Panel de Administrador</h3>
+                </div>
+
+                <div class="panel-section">
+                    <h3>➕ Crear Nueva Película</h3>
+                    
+                    <div class="form-group">
+                        <label for="p-titulo">Título de la Película *</label>
+                        <input 
+                            type="text" 
+                            id="p-titulo" 
+                            placeholder="Ej: Oppenheimer"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-director">Director *</label>
+                        <input 
+                            type="text" 
+                            id="p-director" 
+                            placeholder="Ej: Christopher Nolan"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-year">Año de Lanzamiento *</label>
+                        <input 
+                            type="number" 
+                            id="p-year" 
+                            placeholder="2024"
+                            min="1900"
+                            max="2099"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-categoria">Categoría *</label>
+                        <select id="p-categoria" required>
+                            <option value="">-- Seleccionar Categoría --</option>
+                            <option value="Acción">🔫 Acción</option>
+                            <option value="Drama">🎭 Drama</option>
+                            <option value="Ciencia Ficción">🚀 Ciencia Ficción</option>
+                            <option value="Terror">👻 Terror</option>
+                            <option value="Comedia">😂 Comedia</option>
+                            <option value="Romance">💕 Romance</option>
+                            <option value="Thriller">🔪 Thriller</option>
+                            <option value="Aventura">🗺️ Aventura</option>
+                            <option value="Animación">🎨 Animación</option>
+                            <option value="Documental">📚 Documental</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-sinopsis">Sinopsis (Descripción) *</label>
+                        <textarea 
+                            id="p-sinopsis" 
+                            rows="4"
+                            placeholder="Describe brevemente la película..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div id="admin-message" class="message-box"></div>
+
+                    <button class="btn-primary btn-full" onclick="crearPelicula()">
+                        ✅ Crear Película
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>📋 Gestiones</h3>
+                    <button class="btn-outline btn-full" onclick="mostrarOpcionEditar()">
+                        ✏️ Editar Película
+                    </button>
+                    <button class="btn-danger btn-full" onclick="mostrarOpcionEliminar()">
+                        🗑️ Eliminar Película
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Cliente: Info -->
+            <div id="client-panel" class="panel-content hidden">
+                <div class="welcome-card">
+                    <span class="welcome-emoji">🍿</span>
+                    <h3>¡Bienvenido!</h3>
+                    <p id="welcome-message">Explora nuestro catálogo de películas y comparte tu opinión con la comunidad.</p>
+                </div>
+
+                <div class="panel-section">
+                    <h3>🎬 Opciones</h3>
+                    <button class="btn-outline btn-full" onclick="scrollToTop()">
+                        📺 Ver Catálogo Completo
+                    </button>
+                    <button class="btn-outline btn-full" onclick="mostrarFiltros()">
+                        🔍 Filtrar por Categoría
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>📊 Mi Actividad</h3>
+                    <div class="activity-stats">
+                        <div class="activity-item">
+                            <span class="activity-label">Mis Likes:</span>
+                            <span id="my-likes-count" class="activity-value">0</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-label">Mis Comentarios:</span>
+                            <span id="my-comments-count" class="activity-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal: Feed -->
+        <main class="feed">
+            <!-- Barra de Búsqueda y Filtros -->
+            <div class="feed-header">
+                <h2>🎞️ Cartelera de Películas</h2>
+                <div class="feed-controls">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-box" 
+                        placeholder="Buscar película..."
+                        onkeyup="buscarPeliculas()"
+                    >
+                    <select id="filtro-categoria" class="filter-select" onchange="aplicarFiltro()">
+                        <option value="">Todas las categorías</option>
+                        <option value="Acción">Acción</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Ciencia Ficción">Ciencia Ficción</option>
+                        <option value="Terror">Terror</option>
+                        <option value="Comedia">Comedia</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Thriller">Thriller</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid de Películas -->
+            <div id="lista-peliculas" class="movie-grid">
+                <!-- Se llena con JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Detalles de Película -->
+    <div id="movie-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            
+            <div class="modal-header">
+                <h2 id="modal-titulo">Título de la Película</h2>
+                <span id="modal-categoria" class="badge">Categoría</span>
+            </div>
+
+            <div class="modal-body">
+                <div class="movie-info">
+                    <p><strong>Director:</strong> <span id="modal-director">-</span></p>
+                    <p><strong>Año:</strong> <span id="modal-year">-</span></p>
+                    <p><strong>Categoría:</strong> <span id="modal-categoria-full">-</span></p>
+                </div>
+
+                <div class="movie-sinopsis">
+                    <h3>Sinopsis</h3>
+                    <p id="modal-sinopsis">-</p>
+                </div>
+
+                <div class="movie-stats">
+                    <div class="stat">
+                        <span class="stat-icon">❤️</span>
+                        <span id="modal-likes" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-icon">💬</span>
+                        <span id="modal-comentarios" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <!-- Sección de Likes (solo para clientes) -->
+                <div id="client-actions" class="movie-actions hidden">
+                    <button id="btn-like" class="btn-like btn-full" onclick="darLike()">
+                        ❤️ Me gusta esta película
+                    </button>
+                </div>
+
+                <!-- Sección de Comentarios -->
+                <div class="comments-section">
+                    <h3>💬 Comentarios</h3>
+                    
+                    <div id="add-comment" class="add-comment hidden">
+                        <textarea 
+                            id="comment-text" 
+                            placeholder="Comparte tu opinión sobre esta película..."
+                            rows="3"
+                        ></textarea>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-primary" style="flex: 1;" onclick="publicarComentario()">
+                                ✅ Publicar Comentario
+                            </button>
+                            <button class="btn-outline" style="flex: 1;" onclick="limpiarComentario()">
+                                ❌ Cancelar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="comments-list" class="comments-list">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/usuario.js"></script>
+    <script src="../js/cliente.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>
