@@ -1,3 +1,11 @@
+// ===== UTILIDAD DE SEGURIDAD =====
+
+function sanitizar(texto) {
+    const div = document.createElement('div');
+    div.textContent = texto;
+    return div.innerHTML;
+}
+
 // ===== MANEJO DE USUARIO Y SESIÓN =====
 
 function inicializarApp() {
@@ -39,6 +47,7 @@ function mostrarPanelCliente() {
     document.getElementById('admin-panel').classList.add('hidden');
     document.getElementById('client-panel').classList.remove('hidden');
     document.getElementById('panel-title').textContent = '👤 Panel de Usuario';
+    actualizarEstadisticas();
 }
 
 function cerrarSesion() {
@@ -52,68 +61,23 @@ function cerrarSesion() {
 
 let peliculas = [];
 let peliculaSeleccionada = null;
+const carrito = new Carrito();
 
 function cargarPeliculas() {
     // Cargar películas del localStorage o usar ejemplos
     const peliculasGuardadas = JSON.parse(localStorage.getItem('peliculas')) || [];
     
     if (peliculasGuardadas.length === 0) {
-        // Películas de ejemplo
         peliculas = [
-            {
-                id: 1,
-                titulo: 'Oppenheimer',
-                director: 'Christopher Nolan',
-                año: 2023,
-                categoria: 'Drama',
-                sinopsis: 'La historia de J. Robert Oppenheimer y su papel en el Proyecto Manhattan durante la Segunda Guerra Mundial.',
-                likes: 245,
-                comentarios: []
-            },
-            {
-                id: 2,
-                titulo: 'Dune',
-                director: 'Denis Villeneuve',
-                año: 2021,
-                categoria: 'Ciencia Ficción',
-                sinopsis: 'Paul Atreides viaja a Arrakis, el planeta más peligroso del universo, para llevar a cabo su destino.',
-                likes: 532,
-                comentarios: []
-            },
-            {
-                id: 3,
-                titulo: 'The Shawshank Redemption',
-                director: 'Frank Darabont',
-                año: 1994,
-                categoria: 'Drama',
-                sinopsis: 'Dos hombres encarcelados se unen a lo largo de varios años, encontrando solace y redención.',
-                likes: 1234,
-                comentarios: []
-            },
-            {
-                id: 4,
-                titulo: 'Inception',
-                director: 'Christopher Nolan',
-                año: 2010,
-                categoria: 'Ciencia Ficción',
-                sinopsis: 'Un ladrón que roba secretos corporativos del subconsciente durante el sueño.',
-                likes: 876,
-                comentarios: []
-            },
-            {
-                id: 5,
-                titulo: 'The Dark Knight',
-                director: 'Christopher Nolan',
-                año: 2008,
-                categoria: 'Acción',
-                sinopsis: 'Batman enfrenta a un enemigo caótico conocido como el Joker, quien busca sumir a Gotham en la anarquía.',
-                likes: 1045,
-                comentarios: []
-            }
+            new Pelicula({ id: 1, titulo: 'Oppenheimer', director: 'Christopher Nolan', año: 2023, categoria: 'Drama', sinopsis: 'La historia de J. Robert Oppenheimer y su papel en el Proyecto Manhattan durante la Segunda Guerra Mundial.', puntuacion: 5, imagen: '💣', likes: 245, comentarios: [] }),
+            new Pelicula({ id: 2, titulo: 'Dune', director: 'Denis Villeneuve', año: 2021, categoria: 'Ciencia Ficción', sinopsis: 'Paul Atreides viaja a Arrakis, el planeta más peligroso del universo, para llevar a cabo su destino.', puntuacion: 4, imagen: '🏜️', likes: 532, comentarios: [] }),
+            new Pelicula({ id: 3, titulo: 'The Shawshank Redemption', director: 'Frank Darabont', año: 1994, categoria: 'Drama', sinopsis: 'Dos hombres encarcelados se unen a lo largo de varios años, encontrando solace y redención.', puntuacion: 5, imagen: '🔒', likes: 1234, comentarios: [] }),
+            new Pelicula({ id: 4, titulo: 'Inception', director: 'Christopher Nolan', año: 2010, categoria: 'Ciencia Ficción', sinopsis: 'Un ladrón que roba secretos corporativos del subconsciente durante el sueño.', puntuacion: 5, imagen: '🌀', likes: 876, comentarios: [] }),
+            new Pelicula({ id: 5, titulo: 'The Dark Knight', director: 'Christopher Nolan', año: 2008, categoria: 'Acción', sinopsis: 'Batman enfrenta a un enemigo caótico conocido como el Joker, quien busca sumir a Gotham en la anarquía.', puntuacion: 5, imagen: '🦇', likes: 1045, comentarios: [] })
         ];
         localStorage.setItem('peliculas', JSON.stringify(peliculas));
     } else {
-        peliculas = peliculasGuardadas;
+        peliculas = peliculasGuardadas.map(p => new Pelicula(p));
     }
 
     mostrarPeliculas(peliculas);
@@ -128,18 +92,22 @@ function mostrarPeliculas(listaPeliculas) {
         return;
     }
 
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    const esAdmin = usuarioActual && usuarioActual.tipo === 'Admin';
+
     listaPeliculas.forEach(pelicula => {
+        const yaLeGusto = !esAdmin && usuarioActual && yaDioLike(usuarioActual.id, pelicula.id);
         const card = document.createElement('div');
         card.className = 'movie-card';
         card.innerHTML = `
             <div class="movie-card-header">
-                <h3 class="movie-card-title">${pelicula.titulo}</h3>
-                <p class="movie-card-director">Director: ${pelicula.director}</p>
+                <h3 class="movie-card-title">${sanitizar(pelicula.titulo)}</h3>
+                <p class="movie-card-director">Director: ${sanitizar(pelicula.director)}</p>
             </div>
             <div class="movie-card-body">
                 <div class="movie-card-info">
-                    <span class="movie-card-year">${pelicula.año}</span>
-                    <span class="movie-card-category">${pelicula.categoria}</span>
+                    <span class="movie-card-year">${sanitizar(String(pelicula.año))}</span>
+                    <span class="movie-card-category">${sanitizar(pelicula.categoria)}</span>
                 </div>
                 <div class="movie-card-stats">
                     <div class="movie-card-stat">
@@ -149,13 +117,25 @@ function mostrarPeliculas(listaPeliculas) {
                         <span>💬 ${pelicula.comentarios.length}</span>
                     </div>
                 </div>
-                <div class="movie-card-actions">
-                    <button class="btn-card btn-like" onclick="abrirDetalles(${pelicula.id})">
-                        ❤️ Me gusta
-                    </button>
-                    <button class="btn-card btn-details" onclick="abrirDetalles(${pelicula.id})">
-                        💬 Ver detalles
-                    </button>
+                <div class="movie-card-actions ${esAdmin ? 'actions-admin' : 'actions-client'}">
+                    ${esAdmin ? `
+                        <button class="btn-card btn-edit" onclick="editarPelicula(${pelicula.id})">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-card btn-delete" onclick="eliminarPelicula(${pelicula.id})">
+                            🗑️ Eliminar
+                        </button>
+                    ` : `
+                        <button class="btn-card btn-like" onclick="darLikeDesdeTargeta(${pelicula.id}, this)" ${yaLeGusto ? 'disabled' : ''}>
+                            ${yaLeGusto ? '❤️ Ya te gusta' : '❤️ Me gusta'}
+                        </button>
+                        <button class="btn-card btn-recommend" onclick="agregarARecomendados(${pelicula.id}, this)">
+                            ⭐ Recomendar
+                        </button>
+                        <button class="btn-card btn-details" onclick="abrirDetalles(${pelicula.id})">
+                            💬 Detalles
+                        </button>
+                    `}
                 </div>
             </div>
         `;
@@ -185,11 +165,12 @@ function abrirDetalles(peliculaId) {
     if (usuarioActual.tipo === 'Cliente') {
         clientActions.classList.remove('hidden');
         addComment.classList.remove('hidden');
-        
-        // Habilitar botón de like si no lo ha presionado aún
+
         const btnLike = document.getElementById('btn-like');
-        btnLike.disabled = false;
-        btnLike.classList.remove('liked');
+        const yaLeGusto = yaDioLike(usuarioActual.id, peliculaSeleccionada.id);
+        btnLike.disabled = yaLeGusto;
+        btnLike.classList.toggle('liked', yaLeGusto);
+        btnLike.textContent = yaLeGusto ? '❤️ Ya te gusta esta película' : '❤️ Me gusta esta película';
     } else {
         clientActions.classList.add('hidden');
         addComment.classList.add('hidden');
@@ -215,19 +196,19 @@ function cargarComentarios() {
         return;
     }
 
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
     peliculaSeleccionada.comentarios.forEach(comentario => {
-        const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-        const esAutor = usuarioActual.nombre === comentario.usuario;
+        const esAutor = usuarioActual && usuarioActual.nombre === comentario.usuario;
 
         const comentarioDiv = document.createElement('div');
         comentarioDiv.className = 'comment-item';
         comentarioDiv.id = `comentario-${comentario.id}`;
         comentarioDiv.innerHTML = `
             <div class="comment-header">
-                <span class="comment-author">👤 ${comentario.usuario}</span>
-                <span class="comment-date">${comentario.fecha}</span>
+                <span class="comment-author">👤 ${sanitizar(comentario.usuario)}</span>
+                <span class="comment-date">${sanitizar(comentario.fecha)}</span>
             </div>
-            <p class="comment-text">${comentario.texto}</p>
+            <p class="comment-text">${sanitizar(comentario.texto)}</p>
             ${esAutor ? `
                 <div class="comment-actions">
                     <button class="comment-btn comment-btn-edit" onclick="editarComentario(${comentario.id})">
@@ -269,6 +250,7 @@ function publicarComentario() {
     document.getElementById('comment-text').value = '';
     cargarComentarios();
     document.getElementById('modal-comentarios').textContent = peliculaSeleccionada.comentarios.length;
+    actualizarEstadisticas();
 }
 
 function limpiarComentario() {
@@ -282,7 +264,7 @@ function editarComentario(comentarioId) {
     const comentarioDiv = document.getElementById(`comentario-${comentarioId}`);
     comentarioDiv.innerHTML = `
         <div class="comment-edit-form">
-            <textarea id="edit-text-${comentarioId}" class="edit-textarea">${comentario.texto}</textarea>
+            <textarea id="edit-text-${comentarioId}" class="edit-textarea">${sanitizar(comentario.texto)}</textarea>
             <div class="form-actions">
                 <button class="comment-edit-form btn-save" onclick="guardarEdicionComentario(${comentarioId})">
                     💾 Guardar
@@ -324,25 +306,55 @@ function eliminarComentario(comentarioId) {
 
 // ===== LIKES =====
 
-function darLike() {
-    const btnLike = document.getElementById('btn-like');
-    
-    if (btnLike.disabled) {
-        alert('Ya has dado like a esta película');
+function yaDioLike(usuarioId, peliculaId) {
+    const likes = JSON.parse(localStorage.getItem('likes')) || [];
+    return likes.some(l => l.usuarioId === usuarioId && l.peliculaId === peliculaId);
+}
+
+function registrarLike(usuarioId, peliculaId) {
+    const likes = JSON.parse(localStorage.getItem('likes')) || [];
+    likes.push({ usuarioId, peliculaId });
+    localStorage.setItem('likes', JSON.stringify(likes));
+}
+
+function darLikeDesdeTargeta(peliculaId, btn) {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    if (yaDioLike(usuarioActual.id, peliculaId)) {
+        btn.disabled = true;
+        btn.textContent = '❤️ Ya te gusta';
         return;
     }
-    
+    const pelicula = peliculas.find(p => p.id === peliculaId);
+    if (!pelicula) return;
+    pelicula.likes++;
+    const index = peliculas.findIndex(p => p.id === peliculaId);
+    peliculas[index] = pelicula;
+    localStorage.setItem('peliculas', JSON.stringify(peliculas));
+    registrarLike(usuarioActual.id, peliculaId);
+
+    btn.disabled = true;
+    btn.textContent = '❤️ Ya te gusta';
+
+    const likeStat = btn.closest('.movie-card').querySelector('.movie-card-stat span');
+    if (likeStat) likeStat.textContent = `❤️ ${pelicula.likes}`;
+
+    actualizarEstadisticas();
+}
+
+function darLike() {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    if (yaDioLike(usuarioActual.id, peliculaSeleccionada.id)) return;
+
     peliculaSeleccionada.likes++;
     actualizarPeliculaEnStorage();
+    registrarLike(usuarioActual.id, peliculaSeleccionada.id);
     document.getElementById('modal-likes').textContent = peliculaSeleccionada.likes;
-    
-    // Deshabilitar botón y cambiar su apariencia
+
+    const btnLike = document.getElementById('btn-like');
     btnLike.disabled = true;
     btnLike.classList.add('liked');
-    btnLike.textContent = '❤️ Te gusta esta película';
-    
-    // Mostrar mensaje de éxito
-    alert('¡Le has dado like a la película!');
+    btnLike.textContent = '❤️ Ya te gusta esta película';
+    actualizarEstadisticas();
 }
 
 // ===== UTILIDADES =====
@@ -356,23 +368,27 @@ function actualizarPeliculaEnStorage() {
     }
 }
 
-function buscarPeliculas() {
+function filtrarPeliculas() {
     const termino = document.getElementById('search-input').value.toLowerCase();
-    const filtradas = peliculas.filter(p =>
-        p.titulo.toLowerCase().includes(termino) ||
-        p.director.toLowerCase().includes(termino)
-    );
+    const categoria = document.getElementById('filtro-categoria').value;
+
+    const filtradas = peliculas.filter(p => {
+        const coincideTexto = !termino ||
+            p.titulo.toLowerCase().includes(termino) ||
+            p.director.toLowerCase().includes(termino);
+        const coincideCategoria = !categoria || p.categoria === categoria;
+        return coincideTexto && coincideCategoria;
+    });
+
     mostrarPeliculas(filtradas);
 }
 
+function buscarPeliculas() {
+    filtrarPeliculas();
+}
+
 function aplicarFiltro() {
-    const categoria = document.getElementById('filtro-categoria').value;
-    if (categoria === '') {
-        mostrarPeliculas(peliculas);
-    } else {
-        const filtradas = peliculas.filter(p => p.categoria === categoria);
-        mostrarPeliculas(filtradas);
-    }
+    filtrarPeliculas();
 }
 
 function scrollToTop() {
@@ -455,12 +471,57 @@ function crearPelicula() {
 }
 
 function mostrarOpcionEditar() {
-    alert('Selecciona una película del catálogo y edita sus datos');
+    document.getElementById('lista-peliculas').scrollIntoView({ behavior: 'smooth' });
 }
 
 function mostrarOpcionEliminar() {
-    alert('Selecciona una película del catálogo para eliminarla');
+    document.getElementById('lista-peliculas').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== LISTA DE RECOMENDADOS =====
+
+function agregarARecomendados(peliculaId, btn) {
+    const pelicula = peliculas.find(p => p.id === peliculaId);
+    if (!pelicula) return;
+
+    const yaEsta = carrito.items.some(item => item.pelicula.id === peliculaId);
+    if (yaEsta) {
+        btn.disabled = true;
+        btn.textContent = '✅ Recomendada';
+        return;
+    }
+
+    carrito.agregarProducto(pelicula);
+    btn.disabled = true;
+    btn.textContent = '✅ Recomendada';
+}
+
+// ===== EVENTOS CON addEventListener =====
+
+function inicializarEventos() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', filtrarPeliculas);
+    }
+
+    const filtroCategoria = document.getElementById('filtro-categoria');
+    if (filtroCategoria) {
+        filtroCategoria.addEventListener('change', filtrarPeliculas);
+    }
+
+    const btnLogout = document.querySelector('.btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', cerrarSesion);
+    }
+
+    const btnVaciar = document.getElementById('btn-vaciar-lista');
+    if (btnVaciar) {
+        btnVaciar.addEventListener('click', () => carrito.vaciarCarrito());
+    }
 }
 
 // Inicializar la app cuando cargue la página
-window.addEventListener('DOMContentLoaded', inicializarApp);
+window.addEventListener('DOMContentLoaded', () => {
+    inicializarApp();
+    inicializarEventos();
+});
