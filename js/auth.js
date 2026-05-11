@@ -1,6 +1,6 @@
 // ===== AUTENTICACIÓN =====
 
-const CODIGO_ADMIN = 'CINEMA_ADMIN_2024';
+const CODIGO_ADMIN = 'ADMIN';
 
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
