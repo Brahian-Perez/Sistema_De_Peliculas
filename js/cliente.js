@@ -19,9 +19,11 @@ function traerMisComentarios() {
 
 function actualizarEstadisticas() {
     const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-    let totalLikes = 0;
-    let totalComentarios = 0;
 
+    const likes = JSON.parse(localStorage.getItem('likes')) || [];
+    const totalLikes = likes.filter(l => l.usuarioId === usuarioActual.id).length;
+
+    let totalComentarios = 0;
     peliculas.forEach(pelicula => {
         totalComentarios += pelicula.comentarios.filter(c => c.usuario === usuarioActual.nombre).length;
     });

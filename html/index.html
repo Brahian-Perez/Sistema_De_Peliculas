@@ -1,89 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recomienda las pelis</title>
+    <title>Cinema Matrix</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- Pantalla de Login -->
-    <div id="login-screen">
-        <header>
-            <h1>Cinema Matrix</h1>
-            <p>Accede a tu cuenta</p>
-        </header>
-        <div class="login-btns">
-            <button class="btn-primary" onclick="login('Admin')">Ingresar como Admin</button>
-            <button class="btn-outline" onclick="login('User')">Ingresar como Usuario</button>
+<body class="landing-page">
+    <div class="landing-bg"></div>
+    <div class="landing-content">
+
+        <!-- Navbar -->
+        <nav class="landing-nav">
+            <span class="landing-logo">🎬 Cinema Matrix</span>
+            <a href="inicio_sesion.html" class="btn-nav">Iniciar sesión</a>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-badge">✨ Tu plataforma de cine favorita</div>
+            <h1>Descubre, guarda y comparte tus películas</h1>
+            <p>Explora un catálogo completo, guarda tus favoritas y comparte recomendaciones con la comunidad. Todo en un solo lugar.</p>
+            <div class="hero-actions">
+                <a href="registrar.html" class="btn-hero-primary">Crear cuenta gratis →</a>
+                <a href="inicio_sesion.html" class="btn-hero-outline">Ya tengo cuenta</a>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-number">🎥 100+</div>
+                <div class="stat-label">Películas disponibles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">⭐ 4.8</div>
+                <div class="stat-label">Valoración media</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">👥 500+</div>
+                <div class="stat-label">Usuarios activos</div>
+            </div>
         </div>
+
+        <!-- Features -->
+        <p class="features-title">¿Qué puedes hacer?</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Explora el catálogo</h3>
+                <p>Busca y filtra por género, año o director. Encuentra siempre lo que buscas en segundos.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">❤️</span>
+                <h3>Guarda tus favoritas</h3>
+                <p>Dale like a las películas que más te gusten y construye tu lista personal de imprescindibles.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>Recomienda a amigos</h3>
+                <p>Comparte películas con otros usuarios y descubre lo que la comunidad está viendo ahora.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💬</span>
+                <h3>Opina y comenta</h3>
+                <p>Deja tu reseña en cada película. Tu opinión ayuda a otros a elegir qué ver esta noche.</p>
+            </div>
+        </div>
+
+        <!-- CTA final -->
+        <div class="cta-section">
+            <h2>¿Listo para empezar?</h2>
+            <p>Únete gratis y comienza a explorar el catálogo en menos de un minuto.</p>
+            <a href="registrar.html" class="btn-hero-primary">Crear mi cuenta →</a>
+        </div>
+
+        <p class="landing-footer">© 2025 Cinema Matrix · Todos los derechos reservados</p>
     </div>
-
-    <!-- Aplicación Principal -->
-    <div id="main-app" class="hidden">
-        
-        <!-- Sidebar: Gestión -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2 id="panel-title">Gestión</h2>
-            </div>
-            
-            <div id="admin-form" class="panel-content">
-                <div class="form-group">
-                    <label>Título de la Obra</label>
-                    <input type="text" id="p-titulo" placeholder="Oppenheimer...">
-                </div>
-                <div class="form-group">
-                    <label>Director</label>
-                    <input type="text" id="p-director">
-                </div>
-                <div class="grid-inputs">
-                    <div>
-                        <label>Año</label>
-                        <input type="number" id="p-year" value="2024">
-                    </div>
-                    <div>
-                        <label>Categoría</label>
-                        <select id="p-categoria">
-                            <option>Acción</option>
-                            <option>Drama</option>
-                            <option>Ciencia Ficción</option>
-                            <option>Terror</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Sinopsis</label>
-                    <textarea id="p-sinopsis" rows="4"></textarea>
-                </div>
-                <button class="btn-primary" onclick="crearPelicula()">Añadir al Catálogo</button>
-            </div>
-
-            <div id="user-panel" class="panel-content hidden">
-                <div class="welcome-card">
-                    <span>🍿</span>
-                    <h3>¡Hola de nuevo!</h3>
-                    <p>Explora el contenido y comparte tu opinión con la comunidad.</p>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Contenido Principal: Feed -->
-        <main class="feed">
-            <nav class="feed-nav">
-                <h2>Cartelera</h2>
-                <div class="nav-actions">
-                    <span id="badge-rol" class="badge">Admin</span>
-                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
-                </div>
-            </nav>
-            <div id="lista-peliculas" class="movie-grid">
-                <!-- Se llena con JS -->
-            </div>
-        </main>
-    </div>
-
-    <!-- Enlace al JS -->
-    <script src="../js/pelicula.js"></script>
 </body>
 </html>
